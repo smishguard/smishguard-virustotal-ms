@@ -51,5 +51,9 @@ def analyze_and_report_url():
 
     return jsonify({"overall_result": overall_result})
 
+@app.route("/ping")
+def ping():
+    return jsonify({"message": "pong"})
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

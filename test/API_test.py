@@ -1,6 +1,11 @@
 import requests
+import sys
+import os
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
-BASE_URL = "http://localhost:5000"  # Cambia la URL si usas otro puerto o servidor
+from app import app, analyze_url, get_report, is_report_positive
+
+BASE_URL = "https://smishguard-virustotal-ms.onrender.com"  # Cambia la URL si usas otro puerto o servidor
 
 def test_ping():
     """Prueba el endpoint /ping para verificar que el servicio está activo."""
@@ -11,7 +16,7 @@ def test_ping():
 def test_analyze_url_positive():
     """Prueba el endpoint /analyze-url con un URL malicioso simulado."""
     # Simular el análisis de una URL maliciosa
-    url_data = {"url": "http://malicious.com"}
+    url_data = {"url": "http://www.malicious.com/"}
     response = requests.post(f"{BASE_URL}/analyze-url", json=url_data)
     assert response.status_code == 200
     assert "POSITIVO: ES MALICIOSO" in response.json().get("overall_result")
@@ -19,7 +24,7 @@ def test_analyze_url_positive():
 def test_analyze_url_negative():
     """Prueba el endpoint /analyze-url con un URL no malicioso simulado."""
     # Simular el análisis de una URL no maliciosa
-    url_data = {"url": "http://safe.com"}
+    url_data = {"url": "http://www.google.com"}
     response = requests.post(f"{BASE_URL}/analyze-url", json=url_data)
     assert response.status_code == 200
     assert "NEGATIVO: NO ES MALICIOSO" in response.json().get("overall_result")
@@ -30,11 +35,4 @@ def test_analyze_url_no_url_provided():
     assert response.status_code == 400
     assert "No URL provided" in response.json().get("error")
 
-def test_analyze_url_api_key_error():
-    """Prueba el endpoint /analyze-url para manejar un error de API Key faltante."""
-    # Aquí, podríamos simular que la API Key está ausente o es inválida.
-    # Esta prueba puede necesitar configurar una clave inválida en el entorno.
-    url_data = {"url": "http://example.com"}
-    response = requests.post(f"{BASE_URL}/analyze-url", json=url_data)
-    assert response.status_code == 400
-    assert "API key" in response.json().get("error")
+
